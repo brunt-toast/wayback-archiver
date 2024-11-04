@@ -30,9 +30,19 @@ internal class Program
         {
             var url = matches[i].ToString();
             string displayUrl = (url.Length < 65 ? url : string.Join("", url.Take(62)) + "...");
-            Console.Write($"{(i+1).ToString().PadLeft(matches.Count.ToString().Length, '0')} of {matches.Count}: {displayUrl.PadRight(Math.Min(70, longestUrlLength))} - ");
+            Console.Write($"{(i + 1).ToString().PadLeft(matches.Count.ToString().Length, '0')} of {matches.Count}: {displayUrl.PadRight(Math.Min(70, longestUrlLength))} - ");
 
-            var res = client.GetAsync($"https://web.archive.org/save/{url}").Result;
+            HttpResponseMessage? res;
+            try
+            {
+                res = client.GetAsync($"https://web.archive.org/save/{url}").Result;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Exception while getting {url}:");
+                Console.WriteLine(ex);
+                continue;
+            }
             if (res.IsSuccessStatusCode)
             {
                 Console.WriteLine("OK");
